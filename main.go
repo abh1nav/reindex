@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 
 	"github.com/abh1nav/reindex/reindex"
 )
@@ -16,9 +17,24 @@ var (
 func main() {
 	flag.Parse()
 	c := &reindex.ReindexConf{
-		SrcServer:  srcES,
-		SrcIndex:   srcIndex,
-		DestServer: destES,
-		destIndex:  destIndex}
+		SrcServer:     *srcES,
+		SrcIndex:      *srcIndex,
+		DestServer:    *destES,
+		DestIndex:     *destIndex,
+		ScrollTimeout: "1m"}
 	reindex.SetConf(c)
+
+	scrollID := reindex.CreateScroll()
+	scrollRes, err := reindex.FetchScrollPage(scrollID)
+	if err != nil {
+		log.Fatal("Failed to fetch page from Elasticsearch: " + err.Error())
+	}
+
+	for len(scrollRes.Hits.Hits) > 0 {
+		reindex.Index(scrollRes)
+		scrollRes, err = reindex.FetchScrollPage(scrollID)
+		if err != nil {
+			log.Fatal("Failed to fetch page from Elasticsearch: " + err.Error())
+		}
+	}
 }

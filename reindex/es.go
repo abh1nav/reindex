@@ -5,6 +5,15 @@ import (
 	"fmt"
 )
 
+// generateScanScrollBody returns the query that's executed on the
+// intial Scan Scroll setup request.
+func generateScanScrollBody() string {
+	return `{
+	    "query": {"match_all": {}},
+	    "size":  5
+	}`
+}
+
 // ScrollResult represents the Elasticsearch response returned when a
 // Scan and Scroll request is created or a page is retrieved using a
 // Scan and Scroll call.
@@ -31,14 +40,15 @@ type Hits struct {
 
 // Hit represents a document in Elasticsearch.
 type Hit struct {
-	Index  string     `json:"_index"`
-	Type   string     `json:"_type"`
-	ID     string     `json:"_id"`
-	Source RawMessage `json:"_source"`
+	Index  string          `json:"_index"`
+	Type   string          `json:"_type"`
+	ID     string          `json:"_id"`
+	Source json.RawMessage `json:"_source"`
 }
 
 // bulkMetaTemplate is the template used for the first line of a bulk api
-// indexing request.
+// indexing request. Bulk API docs:
+// http://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html
 var bulkMetaTemplate = `{"index": {"_index": "%s", "_type": "%s", "_id": "%s"}}`
 
 // GenerateBulkMeta generates the meta line for the bulk api indexing request
@@ -49,10 +59,6 @@ func (hit *Hit) GenerateBulkMeta() string {
 
 // GenerateBulkSource serializes the source field into a JSON string for the
 // second line of a bulk api indexing request.
-func (hit *Hit) GenerateBulkSource() (string, error) {
-	s, err := json.Marshal(hit.Source)
-	if err != nil {
-		return nil, err
-	}
-	return s, nil
+func (hit *Hit) GenerateBulkSource() string {
+	return string(hit.Source)
 }

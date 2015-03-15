@@ -21,6 +21,9 @@ all:
 
 build: clean
 	@go build ./...
+	@mkdir -p ./bin
+	@rm -f ./bin/*
+	@go build -o ./bin/reindex-$(version).bin main.go
 
 clean:
 	@rm -rf ./bin

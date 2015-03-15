@@ -2,10 +2,11 @@ package reindex
 
 // ReindexConf keeps the args around for easy access.
 type ReindexConf struct {
-	SrcServer  string
-	SrcIndex   string
-	DestServer string
-	DestIndex  string
+	SrcServer     string
+	SrcIndex      string
+	DestServer    string
+	DestIndex     string
+	ScrollTimeout string
 }
 
 // reindexConf is where the config is stored.

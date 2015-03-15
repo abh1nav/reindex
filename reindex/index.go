@@ -1,10 +1,17 @@
 package reindex
 
-import "log"
+import (
+	"fmt"
+	"log"
+	"strings"
+)
 
 // index takes a ScrollResult and generates & executes a bulk api indexing
 // request for all hits in the ScrollResult.
-func index(scrollRes *ScrollResult) error {
+//
+// Bulk API docs:
+// http://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html
+func Index(scrollRes *ScrollResult) error {
 	var bulkReq []string
 	for _, hit := range scrollRes.Hits.Hits {
 		req, err := generateBulkRequest(&hit)
@@ -17,16 +24,25 @@ func index(scrollRes *ScrollResult) error {
 		bulkReq = append(bulkReq, req...)
 	}
 
-	// TODO: Execute the bulk api request
+	reqBody := strings.Join(bulkReq, "\n")
+	conf := GetConf()
+	url := fmt.Sprintf("%s/_bulk", conf.DestServer)
+	_, err := execJSONHTTPReq("POST", url, []byte(reqBody))
+	if err != nil {
+		// TODO: Push this into an error channel that logs to a file
+		return err
+	}
+
+	// TODO: Go through the response body and check for errors
+	return nil
 }
 
 // generateBulkRequest maps a Hit into a slice of the meta portion as well as
 // the source portion of a bulk api indexing request.
 func generateBulkRequest(hit *Hit) ([]string, error) {
 	meta := hit.GenerateBulkMeta()
-	src, err := hit.GenerateBulkSource()
-	if err != nil {
-		return err
-	}
+	src := hit.GenerateBulkSource()
+	log.Println("Meta is: ", meta)
+	log.Println("Source is: ", src)
 	return []string{meta, src}, nil
 }

@@ -47,7 +47,7 @@ type Hit struct {
 }
 
 // bulkMetaTemplate is the template used for the first line of a bulk api
-// indexing request. Bulk API docs:
+// indexing request. Elasticsearch Bulk API docs:
 // http://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html
 var bulkMetaTemplate = `{"index": {"_index": "%s", "_type": "%s", "_id": "%s"}}`
 

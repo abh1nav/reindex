@@ -9,7 +9,7 @@ import (
 // index takes a ScrollResult and generates & executes a bulk api indexing
 // request for all hits in the ScrollResult.
 //
-// Bulk API docs:
+// Elasticsearch Bulk API docs:
 // http://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html
 func Index(scrollRes *ScrollResult) error {
 	var bulkReq []string
@@ -42,7 +42,5 @@ func Index(scrollRes *ScrollResult) error {
 func generateBulkRequest(hit *Hit) ([]string, error) {
 	meta := hit.GenerateBulkMeta()
 	src := hit.GenerateBulkSource()
-	log.Println("Meta is: ", meta)
-	log.Println("Source is: ", src)
 	return []string{meta, src}, nil
 }

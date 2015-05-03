@@ -20,10 +20,10 @@ all:
 	@echo "  update_deps - update deps lock file"
 
 build: clean
-	@go build ./...
-	@mkdir -p ./bin
-	@rm -f ./bin/*
 	@go build -o ./bin/reindex-$(version).bin main.go
+
+build_linux: clean
+	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ./bin/reindex-$(version).bin main.go
 
 clean:
 	@rm -rf ./bin

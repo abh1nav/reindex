@@ -24,7 +24,7 @@ func Index(scrollRes *ScrollResult) error {
 		bulkReq = append(bulkReq, req...)
 	}
 
-	reqBody := strings.Join(bulkReq, "\n")
+	reqBody := strings.Join(bulkReq, "\n") + "\n"
 	conf := GetConf()
 	url := fmt.Sprintf("%s/_bulk", conf.DestServer)
 	_, err := execJSONHTTPReq("POST", url, []byte(reqBody))

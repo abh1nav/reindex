@@ -54,7 +54,8 @@ var bulkMetaTemplate = `{"index": {"_index": "%s", "_type": "%s", "_id": "%s"}}`
 // GenerateBulkMeta generates the meta line for the bulk api indexing request
 // from the given hit by extracting the index, type and ID info.
 func (hit *Hit) GenerateBulkMeta() string {
-	return fmt.Sprintf(bulkMetaTemplate, hit.Index, hit.Type, hit.ID)
+	conf := GetConf()
+	return fmt.Sprintf(bulkMetaTemplate, conf.DestIndex, hit.Type, hit.ID)
 }
 
 // GenerateBulkSource serializes the source field into a JSON string for the
